@@ -1,0 +1,105 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2868
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c1\c1;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Part 1: Create quality profiles\
+\cf2 Tool: dada2: plotQualityProfile in galaxy\
+Version: 
+\f1 \cf2 \expnd0\expndtw0\kerning0
+Galaxy Version 1.38.0+galaxy0
+\f0 \cf2 \kerning1\expnd0\expndtw0 \
+Parameters: default; select all fecal cloacal files in right tab of galaxy except .csv file; hit \'9320 of __ selected\'94 dropdown; auto build list; default parameters and name file \'93WCSPmicrobiome\'94\
+Output: \'93WCSPmicrobiome\'94 collection of 10 fastqsanger.gz paired files (download)\
+\
+Part 2: Remove low quality reads and trim poor-quality bases from the ends of reads before denoising\
+Tool: dada2: filterAndTrim\
+Version: 
+\f1 \cf2 \expnd0\expndtw0\kerning0
+Galaxy Version 1.38.0+galaxy0
+\f0 \cf2 \kerning1\expnd0\expndtw0 \
+Parameters: trimming parameters \'93truncate read length\'94 set to 220; yes to separate filters and trimmers for reverse reads; 
+\f1 \cf2 \expnd0\expndtw0\kerning0
+Trim start of each read set to 10; Truncate read length set to 205; 
+\f0 \cf2 \kerning1\expnd0\expndtw0 \
+Output: collection of 10 fastqsanger.gz paired files; 10 tablular datasets, one for each pair; intermediate step no need to download outputs\
+\
+Part 3: Split paired reads aka unzip collection\
+Split fwd and reverse reads from one another\
+Tool: Unzip collection\
+Version: 
+\f1 \cf2 \expnd0\expndtw0\kerning0
+Galaxy Version 1.0.0
+\f0 \cf2 \kerning1\expnd0\expndtw0 \
+Parameters: input collection of fastqsanger.gz files from filterAndTrim step; default\
+Output: fwd and reverse collections of 10 fastqsanger.gz unpaired files; if necessary, rename outputs to distinguish between fwd and reverse; intermediate step no need to download outputs\
+\
+Part 4: Model sequencing error rates to distinguish real sequence variants from sequencing mistakes\
+Tool: 
+\f1 \cf2 \expnd0\expndtw0\kerning0
+dada2: learnErrors
+\f0 \cf2 \kerning1\expnd0\expndtw0 \
+Version: 
+\f1 \cf2 \expnd0\expndtw0\kerning0
+Galaxy Version 1.38.0+galaxy0
+\f0 \cf2 \kerning1\expnd0\expndtw0 \
+Parameters: default; input fwd dataset collection first then rev first\
+Output: fwd and reverse error rate plots pdf (download) and .dada2_errorrates files; rename outputs to distinguish between fwd and reverse\
+\
+Part 5: Denoise aka correct likely sequencing errors using learned error model and infer exact amplicon sequence variants (ASVs); (??Groups together if approx 97% similar?? Point VL made idk if ab this or OTU clustering)\
+Tool: dada2: dada\
+Version: 
+\f1 \cf2 \expnd0\expndtw0\kerning0
+Galaxy Version 1.38.0+galaxy0\
+Parameters: Yes to process samples in batches; input dataset collection fwd reads first; input error rates single dataset collection of fwd reads\
+Output: fwd and rev collections of 10 .dada2_dada files
+\f0 \cf2 \kerning1\expnd0\expndtw0 \
+\
+Tool: dada2: mergepairs\
+Version:\
+Parameters: Default; input dada2: dada fwd, dada2: filterAndTrim fwd, dada2: dada rev, and dada2: filterAndTrim rev files\
+Output: collection of 10 .dada_mergepairs files\
+\
+Part 6: create amplicon sequence variant table\
+Tool: dada2: makeSequenceTable\
+Version:\
+Parameters: input mergePairs dataset collection; default\
+Output:\
+\
+Remove dimeric sequences\
+Tool: dada2: removeBimeraDenovo\
+Paramters: select sequence table for single dataset; for method select \'93check samples independently for bimeras and make a consensus decision on each sequence variant\'94\
+Download table with bimeras removed bimara.csv \
+\
+Part 8: assign taxonomy\
+Tool: Assign Taxonomy\
+Parameters: input remove bimera table; select reference data set silva 138; yes to add genus species to the tax table and select silva version 138 again\
+Output: table?\
+\
+Skip part 9\
+\
+Tool: create phyloseq object\
+Version:\
+Parameters: input metadata .csv into sample table; other two tables we generated in galaxy will auto populate in the dropdown options\
+Output: \
+\
+Day 18\
+Phyloseq runs r for us through galaxy so we don\'92t need to download it\
+\
+Part 1\
+\
+Phyloseq bar chart\
+Parameters: phylum for fill variable; infection status for filter by variable (Filter by variable can group by any column/category from metadata.csv file)\
+\
+Interactive tools allow you to look at alpha div\
+In aesthetic mapping can change settings for color and shape\
+One limitation of doing in web and not r we can\'92t get statistical significance of data. For the purposes of this class that\'92s okay bc we can make broad interpretations of this data\
+\
+Beta div uses ordination plot (bc ordination is way we graphically represent); bray for distance; color by sample source; shape or color for infection status or sex at same time; download and save infielder; call bray Curtis something\
+\
+Activity due tuesday\
+Will upload to GitHub tues\
+dada2 activity 17 due today\cf0 \
+}
